@@ -8,60 +8,61 @@
 ;Crea la matriz de "y" filas por "x" columnas estableciendo cada valor en 0
 (define (crateMatrixAux x y matrix)
     (cond (
-        (zero? y) 
+        (zero? x) 
             matrix)
-        (else (crateMatrixAux x (- y 1) (append matrix (list (make-list x 0))) )
+        (else (crateMatrixAux (- x 1) y (append matrix (list (make-list y 0))) )
         )
     )
 )
 ;Recorre la matriz en busca de una posicion deseada "y" , "x" y cambia el valor de esa posicion 
 (define (setValueMatrix matrix x y value)
     (cond
-        ((zero? y) 
-            (cons (replaceSublist (car matrix) x value) (cdr matrix))
+        ((zero? x) 
+            (cons (replaceSublist (car matrix) y value) (cdr matrix))
         )
         (else 
-            (cons (car matrix) (setValueMatrix (cdr matrix) x (- y 1) value))
+            (cons (car matrix) (setValueMatrix (cdr matrix) (- x 1) y value))
         )
     )
 )
 ;Remplaza el valor que se ubica en la posicion de "x"
-(define (replaceSublist subList x value)
+(define (replaceSublist subList y value)
     (cond
-        ((zero? x)
+        ((zero? y)
             (cons value (cdr subList))
         )
         (else 
-            (cons (car subList) (replaceSublist (cdr subList) (- x 1) value))
+            (cons (car subList) (replaceSublist (cdr subList) (- y 1) value))
         )    
     )
 )
 
 ;Obtiene el elemento que se encuentre en la posicion "y", "x"
-(define (getValue matrix y x)
+(define (getValue matrix x y)
     (cond 
-        ((zero? y)
-            (getValueAux (car matrix) x)
+        ((zero? x)
+            (getValueAux (car matrix) y)
         )
         (else
-            (getValue (cdr matrix) (- y 1) x)
+            (getValue (cdr matrix) (- x 1) y)
         )
     )
 )
 ;Recorre una fila hasta encontrar el elemento en la posicion "x"
-(define (getValueAux subList x)
+(define (getValueAux subList y)
     (cond
-        ((zero? x)
+        ((zero? y)
             (car subList)
         )
         (else
-            (getValueAux (cdr subList) (- x 1))
+            (getValueAux (cdr subList) (- y 1))
         )
     )
 )
 ;Retorna la cantidad de movimientos posibles
 (define (possibleWins matrix num)
-    (+ (horizontal matrix num 0) (vertical matrix num 0) (diagonal matrix num 0) (diagonalUpward matrix num 0))
+    (+ (horizontal matrix num 0) (vertical matrix num 0) 
+    (diagonal matrix num 0))
 )
 ;Verifica si un hay una fila llena de num o 0
 (define (horizontal matrix num possibility)
@@ -82,7 +83,7 @@
         ((null? subList) 
             #t
         )
-        ((or (zero? (car subList)) (equal? (car subList) num)) 
+        ((or (equal? (car subList) 0) (equal? (car subList) num)) 
             (verifyLine (cdr subList) num)
         )
         (else 
@@ -137,7 +138,7 @@
             possibility
         )
         (else
-            (+ (diagonalUp matrix num possibility) (diagonalDown (cdr matrix) num possibility))
+            (+ (diagonalUp matrix num possibility) (diagonalDown matrix num possibility))
         )
 
     )
@@ -212,5 +213,25 @@
             (append (invertMatrix (cdr matrix)) (list (car matrix)))
         )
     )
+)
+
+;Devueleve los valores de la matriz en una lista
+(define (matrixToList matrix)
+  (matrixToListAux matrix '())
+)
+
+;Recorre la matriz y agrega sus valores a una lista
+(define (matrixToListAux matrix result)
+  (cond
+    ((empty? matrix)
+     result
+    )
+    ((empty? (car matrix))
+     (matrixToListAux (cdr matrix) result)
+    )
+    (else
+     (matrixToListAux (append (list (cdar matrix)) (cdr matrix)) (append result (list (caar matrix))))
+    ) 
+  )  
 )
 (provide (all-defined-out))

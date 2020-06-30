@@ -10,21 +10,21 @@ buscando un posible gane
 ;(greedyAlgorithm (matriz de juego))
 (define (greedyAlgorithm matrix)
     (cond
-        ((not (null? (wins? 0 0 matrix 1)));Gana PC
-            (greedyAlgorithmAux matrix (wins? 0 0 matrix 1))
-        )
-        ((not (null? (wins? 0 0 matrix 2)));Gana User
+        ((not (null? (wins? 0 0 matrix 2)));Gana PC
             (greedyAlgorithmAux matrix (wins? 0 0 matrix 2))
         )
+        ((not (null? (wins? 0 0 matrix 1)));Gana User
+            (greedyAlgorithmAux matrix (wins? 0 0 matrix 1))
+        )
         (else
-            (greedyAlgorithmAux matrix (cdr (bestPos (probabilityList matrix 0 0 '()))))
+            (greedyAlgorithmAux matrix (cdr (bestPos (probabilityList matrix))))
         )
     )
 )
 #|Sustituye 0 por 1 en el tablero en la posicion que entra en la lista|#
 ;(greedyAlgorithmAux (matriz de juego) (lista con valores x, y))
 (define (greedyAlgorithmAux matrix pos)
-    (setValueMatrix matrix (car pos) (cadr pos) 1)
+    (setValueMatrix matrix (cadr pos) (car pos) 2)
 )
 
 #|Verifica en que posicion se puede dar un gane y retorna la posicion en caso de darse un posible gane|#
@@ -39,7 +39,7 @@ buscando un posible gane
         )
         ((not (or (equal? (getValue matrix y x) 2) (equal? (getValue matrix y x) 1)))
             (cond
-                ((win (setValueMatrix matrix x y num) num)
+                ((win (setValueMatrix matrix y x num) num)
                     (list x y)
                 )
                 (else
@@ -80,22 +80,26 @@ buscando un posible gane
     )
 )
 
+(define (probabilityList matrix)
+    (probabilityListAux matrix 0 0 '())
+)
 #|Sustituye temporalmente una posición vacía y evalua si tiene posibilidad de gane a futuro
 basandose en la informacion del momento y retorna las posiciones|#
-;(probabilityList (matriz de juego) (valor de x) (valor de y) (lista vacia))
-(define (probabilityList matrix x y subList)
+;(probabilityListAux (matriz de juego) (valor de x) (valor de y) (lista vacia))
+(define (probabilityListAux matrix x y subList)
     (cond
         ((equal? x (lenghtMatrix (car matrix)))
-            (probabilityList matrix 0 (+ y 1) subList)
+            (probabilityListAux matrix 0 (+ y 1) subList)
         )
         ((equal? y (lenghtMatrix matrix))
             (invertMatrix subList)
         )
         ((not (or (equal? (getValue matrix y x) 2) (equal? (getValue matrix y x) 1)))
-            (probabilityList matrix (+ x 1) y (cons (list (- (possibleWins (setValueMatrix matrix x y 1) 1) (possibleWins (setValueMatrix matrix x y 2) 2)) x y) subList))
+            (probabilityListAux matrix (+ x 1) y (cons (list 
+            (- (possibleWins (setValueMatrix matrix y x 2) 1) (possibleWins (setValueMatrix matrix y x 2) 2)) x y) subList))
         )
         (else
-            (probabilityList matrix (+ x 1) y subList)
+            (probabilityListAux matrix (+ x 1) y subList)
         )
     )
 )
