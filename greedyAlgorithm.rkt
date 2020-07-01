@@ -103,6 +103,4 @@ basandose en la informacion del momento y retorna las posiciones|#
         )
     )
 )
-
-(matrixToList (greedyAlgorithm '((1 0 0) (0 0 0) (0 0 0))))
 (provide (all-defined-out))
