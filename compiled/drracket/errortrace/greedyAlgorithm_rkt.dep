@@ -1,0 +1,1 @@
+("7.7" racket ("478ef70717f2121a713e8d940cb124ff7219f58d" . "0c2001d50858fb8d179ce1bbb65dc215b015afd5") #"C:\\Users\\1001001164\\Documents\\GitHub\\Tic-Tac-Toe\\matrix.rkt" #"C:\\Users\\1001001164\\Documents\\GitHub\\Tic-Tac-Toe\\validations.rkt" (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
