@@ -1,8 +1,8 @@
 #lang racket/gui
 
 
-;(define M 5)
-;(define N 3)
+(define M 5)
+(define N 3)
 
 (define dimension_x 600)
 (define dimension_y 600)
@@ -11,6 +11,8 @@
 
 (require "validations.rkt")
 (require "matrix.rkt")
+(require "greedyAlgorithm.rkt")
+
 
 
 ;__________________________________________________________________________________________________________________________________________________________________________________
@@ -22,60 +24,6 @@
        [label "Tic Tac Toe"]
        [width dimension_x]
        [height (+ dimension_y 59)])); le suma 59 para considerar el espacio de arriba de la ventana
-
-
-;Ventana principal
-( define ventana ( new frame% [ label " Nuevo Juego "]) )
-
-( define datos ( new message%
-                      [ label " Escoja el tamaño de la matriz "]
-                      [ parent ventana ]
-                      [ auto-resize #t ]
-                      ) )
-; define ventana q pide al usuario las dimensiones
-( define lanzar
-    ( new button%
-          [ parent ventana ]
-          [ label " escoger "]
-          [ callback
-            ( lambda ( b c )
-               ( send ventana-de-diálogo show #t )
-
-              ; (print ((string->number (send txt-C get-value) )))
-               ;(print ((string->number (send txt-F get-value))))
-               
-               (send ventana show #f)
-
-               (send frame show #t)
-               (sleep/yield 1)
-               (draw-vertical-lines dc (/ dimension_y (string->number (send txt-C get-value))));dibuja lineas verticales
-               (draw-horizontal-lines dc (/ dimension_x (string->number (send txt-F get-value))));dibuja lineas horizontales
-               (create_matrix (string->number (send txt-C get-value)) (string->number (send txt-F get-value)) '());crea la matriz
-               ) ]         
-          ) )
-
- ; La otra ventana , de diálogo
-( define ventana-de-diálogo ( new dialog% [ label " Escoja las dimensiones del tablero "]) )
-
-( define txt-C ( new text-field%
-                            [ label " columnas :"]
-                            [ parent ventana-de-diálogo ]
-                            ) )
-( define txt-F ( new text-field%
-                              [ label " filas :"]
-                              [ parent ventana-de-diálogo ]
-                              ) )
-( new button%
-      [ parent ventana-de-diálogo ]
-      [ label " Aceptar "]
-      [ callback ( lambda ( b c ) ( send ventana-de-diálogo show #f ) ) ]
-      )
-;( send ventana show #t )
-
-(define M (string->number (send txt-F get-value)))
-(define N (string->number (send txt-C get-value) ))
-
-
 
 ;define el click
 
@@ -122,7 +70,7 @@
 (cond((< dimension_x position) #f)
      
      (else (send dc draw-line position 0 position dimension_x); primero las coordenadas iniciales, luego las finaless
-           (draw-vertical-lines dc (+ position (/ dimension_x (string->number (send txt-C get-value)))) )
+           (draw-vertical-lines dc (+ position (/ dimension_x N)) )
 
       )))
   
@@ -131,30 +79,46 @@
 (cond((< dimension_y position) #f)
      
      (else (send dc draw-line 0 position dimension_y position); primero las coordenadas iniciales, luego las finaless
-           (draw-horizontal-lines dc (+ position (/ dimension_y (string->number (send txt-F get-value)))) )
+           (draw-horizontal-lines dc (+ position (/ dimension_y M)) )
 
       )))
 
 ;dibuja X's
 (define (draw_X position_x position_y)
-  (draw_X_aux (+ (/ dimension_x (* 2 N))(* (quotient position_x (quotient dimension_x N))(/ dimension_x N))) (+ (/ dimension_y (* 2 M))(* (quotient position_y (quotient dimension_x M))(/ dimension_y M)))  )
+  (cond (      (= (list-ref (list-ref matrix (quotient position_y (quotient dimension_y M))) (quotient position_x (quotient dimension_x N)) )0 )
 
-  (displayln (change-at matrix (quotient position_y (quotient dimension_y M)) (quotient position_x (quotient dimension_x N)) 1  ))
+               
+  (draw_X_aux (+ (/ dimension_x (* 2 N))(* (quotient position_x (quotient dimension_x N))(/ dimension_x N))) (+ (/ dimension_y (* 2 M))(* (quotient position_y (quotient dimension_y M))(/ dimension_y M)))  )
+
+  (set! matrix (change-at matrix (quotient position_y (quotient dimension_y M)) (quotient position_x (quotient dimension_x N)) 1  ))
+
+  (draw_O (+ (/ dimension_x (* 2 N))(* (list-ref(list-ref (list-ref (greedyAlgorithm matrix)0)0)1) (/ dimension_x N))) (+ (/ dimension_y (* 2 M))(* (list-ref(list-ref (list-ref (greedyAlgorithm matrix)0)0)0) (/ dimension_y M)))  )
+
+  (set! matrix (caadr (greedyAlgorithm matrix)))
+
+  (displayln matrix)
   )
+        (else #f)
+
+        ))
+  
 
 (define (draw_X_aux x_center y_center)
 (send dc draw-line (- x_center 25) (- y_center 25) (+ x_center 25) (+ y_center 25))
 (send dc draw-line (+ x_center 25) (- y_center 25) (- x_center 25) (+ y_center 25)))
 
 
-
-
 ;O's
 (define (draw_O position_x position_y)
-  (draw_O_aux (+ (/ dimension_x (* 2 M))(* (quotient position_x (quotient dimension_x M))(/ dimension_x M))) (+ (/ dimension_y (* 2 N))(* (quotient position_y (quotient dimension_x N))(/ dimension_y N)))  )
+  (draw_O_aux (+ (/ dimension_x (* 2 N))(* (quotient position_x (quotient dimension_x N))(/ dimension_x N))) (+ (/ dimension_y (* 2 M))(* (quotient position_y (quotient dimension_y M))(/ dimension_y M)))  )
   )
 
 (define (draw_O_aux x_center y_center)
+  (displayln x_center)
+  (displayln y_center)
+  (displayln (list-ref(list-ref (list-ref (greedyAlgorithm matrix)0)0)0))
+  (displayln (list-ref(list-ref (list-ref (greedyAlgorithm matrix)0)0)1))
+  
   (send dc draw-ellipse (- x_center 25) (- y_center 25) 50 50) 
 )
 
@@ -200,9 +164,8 @@
        [callback (lambda (i e) (send frame show #f))]
        [shortcut #\q]))
 
-;(send frame show #t)
-; (sleep/yield 1)
-;(draw-vertical-lines dc (/ dimension_y N));dibuja lineas verticales
-;(draw-horizontal-lines dc (/ dimension_x M));dibuja lineas horizontales
-;(create_matrix M N '());crea la matriz
-( send ventana show #t )
+(send frame show #t)
+ (sleep/yield 1)
+(draw-vertical-lines dc (/ dimension_y N));dibuja lineas verticales
+(draw-horizontal-lines dc (/ dimension_x M));dibuja lineas horizontales
+(create_matrix M N '());crea la matriz
