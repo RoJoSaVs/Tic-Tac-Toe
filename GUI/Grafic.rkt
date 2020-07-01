@@ -18,13 +18,29 @@
        [width dimension_x]
        [height (+ dimension_y 59)])); le suma 59 para considerar el espacio de arriba de la ventana
 
+;define el click
+
+(define click-canvas%
+  (class canvas%
+      (init-field [character #\Space]
+                  [color (make-object color% "red")])
+    
+     (define/override (on-event e)
+      (when (equal? (send e get-event-type) 'left-down)
+        (print "getx")
+        (print (send e get-x))
+       (print "gety")
+        (print (send e get-y))))
+      
+        (super-new)))
+
 ; define un canvas sobre el frame
-(define canvas (new canvas% [parent frame]))
+
+(define canvas(new click-canvas%
+               [parent frame]))
+           
 (define dc (send canvas get-dc))
-
-
-;dibuja encima del canvas
-
+;dibuja encima del canvas 
 ;lineas verticales
 (define (draw-vertical-lines dc position)
 (cond((< dimension_x position) #f)
