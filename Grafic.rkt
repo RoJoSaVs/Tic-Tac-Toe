@@ -1,8 +1,8 @@
 #lang racket/gui
 
 
-(define M 5)
-(define N 3)
+;(define M 5)
+;(define N 3)
 
 (define dimension_x 600)
 (define dimension_y 600)
@@ -22,6 +22,60 @@
        [label "Tic Tac Toe"]
        [width dimension_x]
        [height (+ dimension_y 59)])); le suma 59 para considerar el espacio de arriba de la ventana
+
+
+;Ventana principal
+( define ventana ( new frame% [ label " Nuevo Juego "]) )
+
+( define datos ( new message%
+                      [ label " Escoja el tamaño de la matriz "]
+                      [ parent ventana ]
+                      [ auto-resize #t ]
+                      ) )
+; define ventana q pide al usuario las dimensiones
+( define lanzar
+    ( new button%
+          [ parent ventana ]
+          [ label " escoger "]
+          [ callback
+            ( lambda ( b c )
+               ( send ventana-de-diálogo show #t )
+
+              ; (print ((string->number (send txt-C get-value) )))
+               ;(print ((string->number (send txt-F get-value))))
+               
+               (send ventana show #f)
+
+               (send frame show #t)
+               (sleep/yield 1)
+               (draw-vertical-lines dc (/ dimension_y (string->number (send txt-C get-value))));dibuja lineas verticales
+               (draw-horizontal-lines dc (/ dimension_x (string->number (send txt-F get-value))));dibuja lineas horizontales
+               (create_matrix (string->number (send txt-C get-value)) (string->number (send txt-F get-value)) '());crea la matriz
+               ) ]         
+          ) )
+
+ ; La otra ventana , de diálogo
+( define ventana-de-diálogo ( new dialog% [ label " Escoja las dimensiones del tablero "]) )
+
+( define txt-C ( new text-field%
+                            [ label " columnas :"]
+                            [ parent ventana-de-diálogo ]
+                            ) )
+( define txt-F ( new text-field%
+                              [ label " filas :"]
+                              [ parent ventana-de-diálogo ]
+                              ) )
+( new button%
+      [ parent ventana-de-diálogo ]
+      [ label " Aceptar "]
+      [ callback ( lambda ( b c ) ( send ventana-de-diálogo show #f ) ) ]
+      )
+;( send ventana show #t )
+
+(define M (string->number (send txt-F get-value)))
+(define N (string->number (send txt-C get-value) ))
+
+
 
 ;define el click
 
@@ -68,7 +122,7 @@
 (cond((< dimension_x position) #f)
      
      (else (send dc draw-line position 0 position dimension_x); primero las coordenadas iniciales, luego las finaless
-           (draw-vertical-lines dc (+ position (/ dimension_x N)) )
+           (draw-vertical-lines dc (+ position (/ dimension_x (string->number (send txt-C get-value)))) )
 
       )))
   
@@ -77,7 +131,7 @@
 (cond((< dimension_y position) #f)
      
      (else (send dc draw-line 0 position dimension_y position); primero las coordenadas iniciales, luego las finaless
-           (draw-horizontal-lines dc (+ position (/ dimension_y M)) )
+           (draw-horizontal-lines dc (+ position (/ dimension_y (string->number (send txt-F get-value)))) )
 
       )))
 
@@ -146,8 +200,9 @@
        [callback (lambda (i e) (send frame show #f))]
        [shortcut #\q]))
 
-(send frame show #t)
- (sleep/yield 1)
-(draw-vertical-lines dc (/ dimension_y N));dibuja lineas verticales
-(draw-horizontal-lines dc (/ dimension_x M));dibuja lineas horizontales
-(create_matrix M N '());crea la matriz
+;(send frame show #t)
+; (sleep/yield 1)
+;(draw-vertical-lines dc (/ dimension_y N));dibuja lineas verticales
+;(draw-horizontal-lines dc (/ dimension_x M));dibuja lineas horizontales
+;(create_matrix M N '());crea la matriz
+( send ventana show #t )
