@@ -131,7 +131,7 @@
 (cond((< dimension_x position) #f)
      
      (else (send dc draw-line position 0 position dimension_x); primero las coordenadas iniciales, luego las finaless
-           (draw-vertical-lines dc (+ position (/ dimension_x N)) )
+           (draw-vertical-lines dc (+ position (/ dimension_x (string->number (send txt-F get-value)))) )
 
       )))
   
@@ -140,7 +140,7 @@
 (cond((< dimension_y position) #f)
      
      (else (send dc draw-line 0 position dimension_y position); primero las coordenadas iniciales, luego las finaless
-           (draw-horizontal-lines dc (+ position (/ dimension_y M)) )
+           (draw-horizontal-lines dc (+ position (/ dimension_y (string->number (send txt-C get-value)))) )
 
       )))
 
