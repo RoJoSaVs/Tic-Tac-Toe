@@ -18,13 +18,29 @@
        [width dimension_x]
        [height (+ dimension_y 59)])); le suma 59 para considerar el espacio de arriba de la ventana
 
+;define el click
+
+(define click-canvas%
+  (class canvas%
+      (init-field [character #\Space]
+                  [color (make-object color% "red")])
+    
+     (define/override (on-event e)
+      (when (equal? (send e get-event-type) 'left-down)
+        (print "getx")
+        (print (send e get-x))
+       (print "gety")
+        (print (send e get-y))))
+      
+        (super-new)))
+
 ; define un canvas sobre el frame
-(define canvas (new canvas% [parent frame]))
+
+(define canvas(new click-canvas%
+               [parent frame]))
+           
 (define dc (send canvas get-dc))
-
-
-;dibuja encima del canvas
-
+;dibuja encima del canvas 
 ;lineas verticales
 (define (draw-vertical-lines dc position)
 (cond((< dimension_x position) #f)
@@ -34,6 +50,9 @@
 
       )))
   
+   
+
+
 
 ;lineas horizontales
 (define (draw-horizontal-lines dc position)
@@ -43,18 +62,6 @@
            (draw-horizontal-lines dc (+ position (/ dimension_y N)) )
 
       )))
-
-;X's
-(define (draw_X position_x position_y)
-  (draw_X_aux (+ (/ dimension_x (* 2 M))(* (quotient position_x (/ dimension_x M))(/ dimension_x M))) (+ (/ dimension_y (* 2 N))(* (quotient position_y (/ dimension_x N))(/ dimension_y N)))  )
-  )
-
-(define (draw_X_aux x_center y_center)
-(send dc draw-line (- x_center 25) (- y_center 25) (+ x_center 25) (+ y_center 25))
-(send dc draw-line (+ x_center 25) (- y_center 25) (- x_center 25) (+ y_center 25)))
-
-
-
 ;determina posiciones X y Y
 (define (click-vanvas% N M)
   (class canvas%
@@ -94,4 +101,3 @@
  (sleep/yield 1)
 (draw-vertical-lines dc (/ dimension_x M));dibuja lineas verticales
 (draw-horizontal-lines dc (/ dimension_y N));dibuja lineas horizontales
-(click-vanvas% N M)
