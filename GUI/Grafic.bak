@@ -46,17 +46,6 @@
            (draw-horizontal-lines dc (+ position (/ dimension_y N)) )
 
       )))
-;determina posiciones X y Y
-(define (click-vanvas% N M)
-  (class canvas%
-     (define/override (on-event e)
-      (when (equal? (send e get-event-type) 'left-down)
-        (print "getx")
-        (print (send e get-x))
-       (print "gety")
-        (print (send e get-y))))
-        ;;XXXXXXXXXXXXX))
-        (super-new)))
 
 (define menu-bar
   (new menu-bar%
