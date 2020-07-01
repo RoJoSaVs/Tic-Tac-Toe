@@ -24,11 +24,11 @@ buscando un posible gane
 #|Sustituye 0 por 1 en el tablero en la posicion que entra en la lista|#
 ;(greedyAlgorithmAux (matriz de juego) (lista con valores x, y))
 (define (greedyAlgorithmAux matrix pos)
-    (setValueMatrix matrix (cadr pos) (car pos) 2)
+    (list (list (list (cadr pos) (car pos))) (list (setValueMatrix matrix (cadr pos) (car pos) 2)))
 )
 
 #|Verifica en que posicion se puede dar un gane y retorna la posicion en caso de darse un posible gane|#
-;(wins? (posicion x) (posicion x) (matriz de juego) (valor de juego))
+;(wins? (posicion x) (posicion y) (matriz de juego) (valor de juego))
 (define (wins? x y matrix num)
     (cond
         ((equal? x (lenghtMatrix (car matrix)))
@@ -103,4 +103,6 @@ basandose en la informacion del momento y retorna las posiciones|#
         )
     )
 )
+
+(matrixToList (greedyAlgorithm '((1 0 0) (0 0 0) (0 0 0))))
 (provide (all-defined-out))
