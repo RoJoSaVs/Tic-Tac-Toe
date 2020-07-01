@@ -1,14 +1,17 @@
 #lang racket/gui
 
 
-(define M 7)
-(define N 5)
+(define M 5)
+(define N 3)
 
 (define dimension_x 600)
 (define dimension_y 600)
 
+(define matrix '())
+
 (require "validations.rkt")
 (require "matrix.rkt")
+
 
 ;__________________________________________________________________________________________________________________________________________________________________________________
 
@@ -29,12 +32,7 @@
     
      (define/override (on-event e)
       (when (equal? (send e get-event-type) 'left-down)
-        (print "getx")
-        (print (send e get-x))
-       (print "gety")
-        
-        (print (send e get-y))
-        (draw_O (send e get-x) (send e get-y) )
+        (draw_X (send e get-x) (send e get-y) )
         ))
       
         (super-new)))
@@ -45,13 +43,32 @@
                [parent frame]))
            
 (define dc (send canvas get-dc))
-;dibuja encima del canvas 
+;dibuja encima del canvas
+
+;crea matriz que almacena valores, ESTA FUNCION SOLO DEBE SER LLAMADA UNA VEZ AL PRINCIPIO DEL JUEGO
+(define (create_matrix M N new_matrix)
+(cond ((= M 0) (displayln new_matrix)(set! matrix new_matrix))
+      (else(create_matrix (- M 1) N (append new_matrix (list (fill_columns N '())))))))
+
+(define (fill_columns N new_list)
+(cond ((= N 0) new_list)
+      (else (fill_columns (- N 1) (append new_list '(0))))))
+
+
+;modifica la matriz
+(define (change-at l x y to);argumentos: lista posicion_x posicion_y nuevo valor
+  (for/list ([row l] [i (length l)])
+    (for/list ([e row] [j (length row)])
+      (if (and (= x i) (= y j))
+          to
+          e))))
+
 ;lineas verticales
 (define (draw-vertical-lines dc position)
 (cond((< dimension_x position) #f)
      
      (else (send dc draw-line position 0 position dimension_x); primero las coordenadas iniciales, luego las finaless
-           (draw-vertical-lines dc (+ position (/ dimension_x M)) )
+           (draw-vertical-lines dc (+ position (/ dimension_x N)) )
 
       )))
   
@@ -60,13 +77,15 @@
 (cond((< dimension_y position) #f)
      
      (else (send dc draw-line 0 position dimension_y position); primero las coordenadas iniciales, luego las finaless
-           (draw-horizontal-lines dc (+ position (/ dimension_y N)) )
+           (draw-horizontal-lines dc (+ position (/ dimension_y M)) )
 
       )))
 
-;X's
+;dibuja X's
 (define (draw_X position_x position_y)
-  (draw_X_aux (+ (/ dimension_x (* 2 M))(* (quotient position_x (quotient dimension_x M))(/ dimension_x M))) (+ (/ dimension_y (* 2 N))(* (quotient position_y (quotient dimension_x N))(/ dimension_y N)))  )
+  (draw_X_aux (+ (/ dimension_x (* 2 N))(* (quotient position_x (quotient dimension_x N))(/ dimension_x N))) (+ (/ dimension_y (* 2 M))(* (quotient position_y (quotient dimension_x M))(/ dimension_y M)))  )
+
+  (displayln (change-at matrix (quotient position_y (quotient dimension_y M)) (quotient position_x (quotient dimension_x N)) 1  ))
   )
 
 (define (draw_X_aux x_center y_center)
@@ -104,7 +123,6 @@
      
   ))
 
-
 (define menu-bar
   (new menu-bar%
        [parent frame]))
@@ -130,5 +148,6 @@
 
 (send frame show #t)
  (sleep/yield 1)
-(draw-vertical-lines dc (/ dimension_x M));dibuja lineas verticales
-(draw-horizontal-lines dc (/ dimension_y N));dibuja lineas horizontales
+(draw-vertical-lines dc (/ dimension_y N));dibuja lineas verticales
+(draw-horizontal-lines dc (/ dimension_x M));dibuja lineas horizontales
+(create_matrix M N '());crea la matriz
