@@ -1,8 +1,8 @@
 #lang racket/gui
 
 
-;(define M 5)
-;(define N 3)
+(define M 5)
+(define N 3)
 
 (define dimension_x 600)
 (define dimension_y 600)
@@ -43,10 +43,11 @@
             ( lambda ( b c )
                ( send ventana-de-diálogo show #t )
 
-              
-               (define M (string->number (send txt-C get-value)))
-               (define N (string->number (send txt-F get-value) ))
-               
+               ;(string->number (string #\1))
+
+               (set! M (string->number (send txt-F get-value)))
+               (set! N (string->number (send txt-C get-value) ))
+
 
                (cond ((or (> (string->number (send txt-C get-value)) 3) (<  (string->number (send txt-C get-value)) 10) (>  (string->number (send txt-F get-value)) 3) (<  (string->number (send txt-F get-value)) 10)
                       ( send ventana show #t )))) 
@@ -55,9 +56,9 @@
                        (send frame show #t) (send ventana show #f))
               
                (sleep/yield 1)
-               (draw-vertical-lines dc (/ dimension_y (string->number (send txt-C get-value))));dibuja lineas verticales
-               (draw-horizontal-lines dc (/ dimension_x (string->number (send txt-F get-value) )));dibuja lineas horizontales
-               (create_matrix (string->number (send txt-C get-value)) (string->number (send txt-F get-value)) '());crea la matriz
+               (draw-vertical-lines dc (/ dimension_y N));dibuja lineas verticales
+               (draw-horizontal-lines dc (/ dimension_x M));dibuja lineas horizontales
+               (create_matrix M N '());crea la matriz
                
             
                ) ]         
@@ -81,10 +82,6 @@
       )
 ( send ventana show #t )
     
-(define M (string->number (send txt-C get-value)))
-(define N (string->number (send txt-F get-value) ))
-
-
 
 ;define el click
 
@@ -133,7 +130,7 @@
 (cond((< dimension_x position) #f)
      
      (else (send dc draw-line position 0 position dimension_x); primero las coordenadas iniciales, luego las finaless
-           (draw-vertical-lines dc (+ position (/ dimension_x (string->number (send txt-F get-value)))) )
+           (draw-vertical-lines dc (+ position (/ dimension_x N)) )
 
       )))
   
@@ -142,7 +139,7 @@
 (cond((< dimension_y position) #f)
      
      (else (send dc draw-line 0 position dimension_y position); primero las coordenadas iniciales, luego las finaless
-           (draw-horizontal-lines dc (+ position (/ dimension_y (string->number (send txt-C get-value)))) )
+           (draw-horizontal-lines dc (+ position (/ dimension_y M)) )
 
       )))
 
