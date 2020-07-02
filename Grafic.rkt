@@ -28,7 +28,7 @@
        [width dimension_x]
        [height (+ dimension_y 59)])); le suma 59 para considerar el espacio de arriba de la ventana
 
- ; Ventana principal
+ ; Se crea la primer venta que se meustra la cual pedira al usuario que ingrese la cantidad de columnas y filas 
 ( define ventana ( new frame% [ label " Nuevo Juego "]) )
 
 ( define datos ( new message%
@@ -37,7 +37,7 @@
                       [ auto-resize #t ]
                       ) )
 
-; define ventana q pide al usuario las dimensiones
+; define ventana q pide al usuario las dimensiones, ademas de funcion que limita a que la matriz sea de maxio 10x10 y minimo 3x3
 ( define lanzar
     ( new button%
           [ parent ventana ]
@@ -46,7 +46,7 @@
             ( lambda ( b c )
                ( send ventana-de-diálogo show #t )
 
-               ;(string->number (string #\1))
+               
 
                (set! M (string->number (send txt-F get-value)))
                (set! N (string->number (send txt-C get-value) ))
@@ -55,13 +55,13 @@
                (print M)
                (print N )
 
-
+               ;Verifica si el N o el M contiene algun valor mayor a 10 o menor a 3
                (cond ((or (> (string->number (send txt-C get-value)) 3) (<  (string->number (send txt-C get-value)) 10) (>  (string->number (send txt-F get-value)) 3) (<  (string->number (send txt-F get-value)) 10)
                       ( send ventana show #t )))) 
-
+               ;Verifica que todos los valores estan entre 3 y 10, incluyendo a ambos
                (and (>= (string->number (send txt-C get-value)) 3) (<=  (string->number (send txt-C get-value)) 10) (>=  (string->number (send txt-F get-value)) 3) (<=  (string->number (send txt-F get-value)) 10)
                        (send frame show #t) (send ventana show #f))
-              
+              ; grafica las lineas  
                (sleep/yield 1)
                (draw-vertical-lines dc (/ dimension_y N));dibuja lineas verticales
                (draw-horizontal-lines dc (/ dimension_x M));dibuja lineas horizontales
@@ -71,13 +71,14 @@
                ) ]         
           ) )
 
- ; La otra ventana , de diálogo
+ ; crea la ventana en la cual el jugador ingresa el valor de columnas y filas 
 ( define ventana-de-diálogo ( new dialog% [ label " Escoja las dimensiones del tablero "]) )
-
+;permite ingresar las columnas
 ( define txt-C ( new text-field%
                             [ label " columnas :"]
                             [ parent ventana-de-diálogo ]
-                            ) )
+                           ) )
+;permite ingresar las filas
 ( define txt-F ( new text-field%
                               [ label " filas :"]
                               [ parent ventana-de-diálogo ]
@@ -90,8 +91,8 @@
 
     
 
-;define el click
 
+; Funcion que permite el uso del click izquierdo sobre un canvas
 (define click-canvas%
   (class canvas%
       (init-field [character #\Space]
@@ -99,14 +100,16 @@
     
      (define/override (on-event e)
       (when (equal? (send e get-event-type) 'left-down)
+        ;se encarga de dibujar las "X" o las "O" en la posicion que corresponda
         (draw_X (send e get-x) (send e get-y) )
+        ;verifica si exite un ganador en cada jugada
         (bloquear-matrix matrix 1)
         (bloquear-matrix matrix 2)
         ))
       
         (super-new)))
 
-; define un canvas sobre el frame
+; define un canvas sobre el frame para poder utilizar las funciones
 
 (define canvas(new click-canvas%
                [parent frame]))
@@ -207,7 +210,7 @@
 
 
 
-;bloquea la ventana y crea ventana emergente
+;bloquea la ventana y crea ventana emergente cuando el jugador gana, pierde o empata
 (define(bloquear-matrix matrix num)
   (cond ((equal? (win matrix num) #f)
           num)
@@ -217,19 +220,16 @@
           (sleep/yield 1)
           (draw-vertical-lines dc (/ dimension_x M))
           (draw-horizontal-lines dc (/ dimension_y N)))))
-
+;Crea el mensaje que se imprime sobre la ventana creada anteriormente segun corresponda(gane,derrota o empate)
 (define (get-end-game-message num)
     (cond ((= num 2) "Perdiste intenta de nuevo")
      (else (cond ((= num 1) "Ganaste, no lo puedo creer")
            (else "empate"))
             )
-
-     
-      ;(print "   Exelente juego  ")
-      ;(equal? num 2) (print "Perdiste intenta de nuevo")
-      ;(equal? num 1) (print "Ganaste, no lo puedo creer")
      
   ))
+
+;Creacion de GUI de juego 
 
 (define menu-bar
   (new menu-bar%
@@ -239,14 +239,14 @@
   (new menu%
        [label "Juego"]
        [parent menu-bar]))
- 
+;crea funcion para inicir nuevamente el juego desde la ventana 
 (define new-menu
   (new menu-item%
        [label "nuevo juego"]
        [parent file-menu]
        [callback (lambda (i e) ( send ventana show #t ))]
        [shortcut #\n]))
-  
+;crea funcion para finalizar nuevamente el juego desde la ventana  
 (define quit-menu
   (new menu-item%
        [label "Quitar"]
@@ -254,9 +254,5 @@
        [callback (lambda (i e) (send frame show #f))]
        [shortcut #\q]))
 
-;(send frame show #t)
-; (sleep/yield 1)
-;(draw-vertical-lines dc (/ dimension_y N));dibuja lineas verticales
-;(draw-horizontal-lines dc (/ dimension_x M));dibuja lineas horizontales
-;(create_matrix M N '());crea la matriz
+;Incializa el juego en la pimer ventana
 ( send ventana show #t )
