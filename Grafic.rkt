@@ -148,12 +148,12 @@
 
 ;dibuja X's
 (define (draw_X position_x position_y)
-  (cond (      (= (list-ref (list-ref matrix (quotient position_y (quotient dimension_y  (string->number (send txt-C get-value) )))) (quotient position_x (quotient dimension_x  (string->number (send txt-F get-value) ))) )0 )
+  (cond (      (= (list-ref (list-ref matrix (quotient (exact-round position_y) (quotient dimension_y  (string->number (send txt-C get-value) )))) (quotient (exact-round position_x) (quotient dimension_x  (string->number (send txt-F get-value) ))) )0 )
 
                
-  (draw_X_aux (+ (/ dimension_x (* 2 (string->number (send txt-F get-value))))(* (quotient position_x (quotient dimension_x (string->number (send txt-F get-value))))(/ dimension_x (string->number (send txt-F get-value))))) (+ (/ dimension_y (* 2 (string->number (send txt-C get-value))))(* (quotient position_y (quotient dimension_y (string->number (send txt-C get-value))))(/ dimension_y (string->number (send txt-C get-value)))))  )
+  (draw_X_aux (+ (/ dimension_x (* 2 (string->number (send txt-F get-value))))(* (quotient (exact-round position_x) (quotient dimension_x (string->number (send txt-F get-value))))(/ dimension_x (string->number (send txt-F get-value))))) (+ (/ dimension_y (* 2 (string->number (send txt-C get-value))))(* (quotient (exact-round position_y) (quotient dimension_y (string->number (send txt-C get-value))))(/ dimension_y (string->number (send txt-C get-value)))))  )
 
-  (set! matrix (change-at matrix (quotient position_y (quotient dimension_y (string->number (send txt-C get-value)))) (quotient position_x (quotient dimension_x (string->number (send txt-F get-value)))) 1  ))
+  (set! matrix (change-at matrix (quotient (exact-round position_y) (quotient dimension_y (string->number (send txt-C get-value)))) (quotient (exact-round position_x) (quotient dimension_x (string->number (send txt-F get-value)))) 1  ))
 
   (draw_O (+ (/ dimension_x (* 2 (string->number (send txt-F get-value))))(* (list-ref(list-ref (list-ref (greedyAlgorithm matrix)0)0)1) (/ dimension_x (string->number (send txt-F get-value))))) (+ (/ dimension_y (* 2 (string->number (send txt-C get-value))))(* (list-ref(list-ref (list-ref (greedyAlgorithm matrix)0)0)0) (/ dimension_y (string->number (send txt-C get-value)))))  )
 
@@ -173,7 +173,7 @@
 
 ;O's
 (define (draw_O position_x position_y)
-  (draw_O_aux (+ (/ dimension_x (* 2 (string->number (send txt-F get-value))))(* (quotient position_x (quotient dimension_x (string->number (send txt-F get-value))))(/ dimension_x (string->number (send txt-F get-value))))) (+ (/ dimension_y (* 2 (string->number (send txt-C get-value))))(* (quotient position_y (quotient dimension_y (string->number (send txt-C get-value))))(/ dimension_y (string->number (send txt-C get-value)))))  )
+  (draw_O_aux (+ (/ dimension_x (* 2 (string->number (send txt-F get-value))))(* (quotient (exact-round position_x) (quotient dimension_x (string->number (send txt-F get-value))))(/ dimension_x (string->number (send txt-F get-value))))) (+ (/ dimension_y (* 2 (string->number (send txt-C get-value))))(* (quotient (exact-round position_y) (quotient dimension_y (string->number (send txt-C get-value))))(/ dimension_y (string->number (send txt-C get-value)))))  )
   )
 
 (define (draw_O_aux x_center y_center)
