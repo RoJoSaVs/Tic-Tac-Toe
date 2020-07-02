@@ -83,7 +83,7 @@
         ((null? subList) 
             #t
         )
-        ((or (equal? (car subList) 0) (equal? (car subList) num)) 
+        ((or (zero? (car subList)) (equal? (car subList) num)) 
             (verifyLine (cdr subList) num)
         )
         (else 

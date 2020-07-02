@@ -1,5 +1,6 @@
 #lang racket
 
+;Retorna #t si se encuentra una secuencia ganadora en la matriz para un valor dado, en caso contrario retorna #f
 (define (win matrix num)
     (or (horizontalValid matrix num) (verticalValid matrix num) (diagonalUpwardValid matrix num) (diagonalValid matrix num))
 )
@@ -158,4 +159,4 @@
     )
 )
 (provide (all-defined-out))
-;(win '((1 0 0) (1 0 0) (0 1 0)) 1)
+;(win '((1 2 1 1) (2 2 1 1) (1 1 1 2) (2 2 2 2)) 2)
