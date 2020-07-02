@@ -113,9 +113,10 @@
 
 (define canvas(new click-canvas%
                [parent frame]))
-           
+
+;dibuja encima del canvas        
 (define dc (send canvas get-dc))
-;dibuja encima del canvas
+
 
 ;crea matriz que almacena valores, ESTA FUNCION SOLO DEBE SER LLAMADA UNA VEZ AL PRINCIPIO DEL JUEGO
 (define (create_matrix M N new_matrix)
@@ -153,7 +154,7 @@
 
       )))
 
-;dibuja X's
+;dibuja X's, actualiza la matriz y un contador que indica cuando el juego termino y hay un empate
 (define (draw_X position_x position_y)
   (set! cont_actual (add1 cont_actual))
   (cond ( (< cont_actual (- cont_veces 0))
@@ -188,14 +189,16 @@
 (send dc draw-line (+ x_center 25) (- y_center 25) (- x_center 25) (+ y_center 25)))
 
 
-;O's
+;dibuja O's
 (define (draw_O position_x position_y)
   (draw_O_aux (+ (/ dimension_x (* 2 N))(* (quotient (exact-round position_x) (quotient dimension_x N))(/ dimension_x N))) (+ (/ dimension_y (* 2 M))(* (quotient (exact-round position_y) (quotient dimension_y M))(/ dimension_y M)))  )
   (set! cont_actual (add1 cont_actual))
   (cond ((< cont_actual cont_veces)
         #f)
         (else
-         (message-box/custom "The End"  "¡ha sido un empate!" #f #f #f)))
+         (message-box/custom "The End"  "¡ha sido un empate!" #f #f #f)
+         (sleep/yield 5000)
+         ))
 
   )
 
@@ -216,6 +219,7 @@
           num)
         (else
           (equal? 1 (message-box/custom "The End"  (get-end-game-message num) #f #f #f))
+          (sleep/yield 5000)
           (send frame show #t)
           (sleep/yield 1)
           (draw-vertical-lines dc (/ dimension_x M))
