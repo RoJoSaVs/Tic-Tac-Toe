@@ -96,6 +96,8 @@
      (define/override (on-event e)
       (when (equal? (send e get-event-type) 'left-down)
         (draw_X (send e get-x) (send e get-y) )
+        (bloquear-matrix matrix 1)
+        (bloquear-matrix matrix 2)
         ))
       
         (super-new)))
@@ -188,11 +190,11 @@
   (cond ((equal? (win matrix num) #f)
           num)
         (else
-          (equal? 1 (message-box/custom "The End"  (get-end-game-message num) "Play Again" #f #f))
+          (equal? 1 (message-box/custom "The End"  (get-end-game-message num) #f #f #f))
           (send frame show #t)
           (sleep/yield 1)
-          (draw-vertical-lines dc (/ dimension_x M))
-          (draw-horizontal-lines dc (/ dimension_y N)))))
+          (draw-vertical-lines dc (/ dimension_x (/ dimension_x (send txt-C get-value))))
+          (draw-horizontal-lines dc (/ dimension_y (/ dimension_x (send txt-C get-value)))))))
 
 (define (get-end-game-message num)
     (cond
