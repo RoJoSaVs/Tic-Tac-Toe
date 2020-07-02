@@ -4,6 +4,9 @@
 (define M 5)
 (define N 3)
 
+(define cont_veces 0)
+(define cont_actual 0)
+
 (define dimension_x 600)
 (define dimension_y 600)
 
@@ -47,6 +50,8 @@
 
                (set! M (string->number (send txt-F get-value)))
                (set! N (string->number (send txt-C get-value) ))
+               (set! cont_veces (* N M))
+               (set! cont_actual 0)
                (print M)
                (print N )
 
@@ -82,7 +87,7 @@
       [ label " Aceptar "]
       [ callback ( lambda ( b c ) ( send ventana-de-diálogo show #f ) ) ]
       )
-( send ventana show #t )
+
     
 
 ;define el click
@@ -147,22 +152,32 @@
 
 ;dibuja X's
 (define (draw_X position_x position_y)
-  (cond (      (= (list-ref (list-ref matrix (quotient (exact-round position_y) (quotient dimension_y M))) (quotient (exact-round position_x) (quotient dimension_x N)) )0 )
+  (set! cont_actual (add1 cont_actual))
+  (cond ( (< cont_actual (- cont_veces 0))
+          (print cont_actual)
+         (print (< cont_actual cont_veces) )
+      (cond ((= (list-ref (list-ref matrix (quotient (exact-round position_y) (quotient dimension_y M))) (quotient (exact-round position_x) (quotient dimension_x N)) )0 )
 
                
-  (draw_X_aux (+ (/ dimension_x (* 2 N))(* (quotient (exact-round position_x) (quotient dimension_x N))(/ dimension_x N))) (+ (/ dimension_y (* 2 M))(* (quotient (exact-round position_y) (quotient dimension_y M))(/ dimension_y M)))  )
+               (draw_X_aux (+ (/ dimension_x (* 2 N))(* (quotient (exact-round position_x) (quotient dimension_x N))(/ dimension_x N))) (+ (/ dimension_y (* 2 M))(* (quotient (exact-round position_y) (quotient dimension_y M))(/ dimension_y M)))  )
 
-  (set! matrix (change-at matrix (quotient (exact-round position_y) (quotient dimension_y M)) (quotient (exact-round position_x) (quotient dimension_x N)) 1  ))
+               (set! matrix (change-at matrix (quotient (exact-round position_y) (quotient dimension_y M)) (quotient (exact-round position_x) (quotient dimension_x N)) 1  ))
 
-  (draw_O (+ (/ dimension_x (* 2 N))(* (list-ref(list-ref (list-ref (greedyAlgorithm matrix)0)0)1) (/ dimension_x N))) (+ (/ dimension_y (* 2 M))(* (list-ref(list-ref (list-ref (greedyAlgorithm matrix)0)0)0) (/ dimension_y M)))  )
+               (draw_O (+ (/ dimension_x (* 2 N))(* (list-ref(list-ref (list-ref (greedyAlgorithm matrix)0)0)1) (/ dimension_x N))) (+ (/ dimension_y (* 2 M))(* (list-ref(list-ref (list-ref (greedyAlgorithm matrix)0)0)0) (/ dimension_y M)))  )
 
-  (set! matrix (caadr (greedyAlgorithm matrix)))
+               (set! matrix (caadr (greedyAlgorithm matrix)))
 
-  (displayln matrix)
-  )
-        (else #f)
+               (displayln matrix)
 
-        ))
+               
+               
+               
+               )
+            (else #f)))
+
+        (else
+         (draw_X_aux (+ (/ dimension_x (* 2 N))(* (quotient (exact-round position_x) (quotient dimension_x N))(/ dimension_x N))) (+ (/ dimension_y (* 2 M))(* (quotient (exact-round position_y) (quotient dimension_y M))(/ dimension_y M)))  )
+         (message-box/custom "The End"  "¡ha sido un empate!" #f #f #f) )))
   
 
 (define (draw_X_aux x_center y_center)
@@ -173,6 +188,12 @@
 ;O's
 (define (draw_O position_x position_y)
   (draw_O_aux (+ (/ dimension_x (* 2 N))(* (quotient (exact-round position_x) (quotient dimension_x N))(/ dimension_x N))) (+ (/ dimension_y (* 2 M))(* (quotient (exact-round position_y) (quotient dimension_y M))(/ dimension_y M)))  )
+  (set! cont_actual (add1 cont_actual))
+  (cond ((< cont_actual cont_veces)
+        #f)
+        (else
+         (message-box/custom "The End"  "¡ha sido un empate!" #f #f #f)))
+
   )
 
 (define (draw_O_aux x_center y_center)
@@ -198,9 +219,14 @@
           (draw-horizontal-lines dc (/ dimension_y N)))))
 
 (define (get-end-game-message num)
-    (cond
-      (print "   Exelente juego  ")
-      ;(equal? 2 2) (print "Perdiste intenta de nuevo")
+    (cond ((= num 2) "Perdiste intenta de nuevo")
+     (else (cond ((= num 1) "Ganaste, no lo puedo creer")
+           (else "empate"))
+            )
+
+     
+      ;(print "   Exelente juego  ")
+      ;(equal? num 2) (print "Perdiste intenta de nuevo")
       ;(equal? num 1) (print "Ganaste, no lo puedo creer")
      
   ))
@@ -218,7 +244,7 @@
   (new menu-item%
        [label "nuevo juego"]
        [parent file-menu]
-       [callback (lambda (i e) (print "comienza"))]
+       [callback (lambda (i e) ( send ventana show #t ))]
        [shortcut #\n]))
   
 (define quit-menu
@@ -233,3 +259,4 @@
 ;(draw-vertical-lines dc (/ dimension_y N));dibuja lineas verticales
 ;(draw-horizontal-lines dc (/ dimension_x M));dibuja lineas horizontales
 ;(create_matrix M N '());crea la matriz
+( send ventana show #t )
